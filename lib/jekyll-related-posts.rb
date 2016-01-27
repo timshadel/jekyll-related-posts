@@ -25,6 +25,7 @@ module Jekyll
     def add_post(post)
       post = {
         url: post.url,
+        path: post.destination(''),
         title: post.data['title'].dup,
         content: (stem(post.content) + stem(post.data['title']))
       }
@@ -41,13 +42,12 @@ module Jekyll
       template = Liquid::Template.parse(File.read(template_path(site)))
 
       @posts.each do |post|
-        filename = File.join(site.config['destination'], post[:url])
-        rendered = File.read(filename)
+        rendered = File.read(post[:path])
 
         output = template.render('related_posts' => related[post])
 
         rendered.gsub! '<related-posts />', output
-        File.write(filename, rendered)
+        File.write(post[:path], rendered)
       end
     end
 
